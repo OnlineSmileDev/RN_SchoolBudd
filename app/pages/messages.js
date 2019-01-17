@@ -7,7 +7,6 @@ import { Entypo } from '@expo/vector-icons';
 import firebase from 'firebase';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scrollview';
 
-
 export default class Messages extends React.Component {
 
   static navigationOptions = ({ navigation }) => {
@@ -50,14 +49,10 @@ export default class Messages extends React.Component {
 
   componentWillMount() {
     this.getUserName();
-    // this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', this._keyboardDidShow);
-    // this.keyboardDidHideListener = Keyboard.addListener('keyboardDidHide', this._keyboardDidHide);
   }
 
   componentWillUnmount() {
     firebase.database().ref('convos').child(this.state.key).off();
-    // this.keyboardDidShowListener.remove();
-    // this.keyboardDidHideListener.remove();
   }
 
   send = () => {
@@ -73,12 +68,12 @@ export default class Messages extends React.Component {
   }
 
   _keyboardDidShow () {
-    // this.scrollView.scrollToEnd();
-}
+      // this.scrollView.scrollToEnd();
+  }
 
-_keyboardDidHide () {
-  // alert('Keyboard Hidden');
-}
+  _keyboardDidHide () {
+    // alert('Keyboard Hidden');
+  }
 
   _renderItem = ({item}) => {
     if (item.sender === this.state.name) {
@@ -151,7 +146,6 @@ const styles = StyleSheet.create({
     height: Metrics.messageInputHeight,
   },
   newRoom: {
-    // borderBottomWidth: Metrics.horizontalLineHeight,
     flex: 1,
     borderBottomColor: Colors.border,
     marginRight: Metrics.marginHorizontal

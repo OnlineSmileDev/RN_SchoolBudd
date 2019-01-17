@@ -8,7 +8,6 @@ import { WebBrowser } from 'expo';
 import GenerateForm from 'react-native-form-builder';
 import { View, Text } from 'native-base';
 import Colors from '../Themes/Colors';
-import SignupModal from '../components/SignupModal'
 import LoginModal from '../components/LoginModal'
 
 const stripe_url = 'https://api.stripe.com/v1/'
@@ -79,8 +78,6 @@ export default class Login extends React.Component {
        skypeAlertClear: false,
        formGenerator: null,
      }
-     //see what props App.js is constructed with:
-     // console.log(JSON.stringify(props));
    }
 
   componentDidMount() {
@@ -143,15 +140,7 @@ export default class Login extends React.Component {
 
   onPressSaveNewUser =async() => {
     const formValues = this.formGenerator.getValues();
-
-    // var formValues1 = await AsyncStorage.getItem('KK');
-    // console.log('FORM VALUES1', JSON.parse(formValues1));
-    // var formValues = JSON.parse(formValues1)
-
     await this.setState({signUpEmail: formValues.emailAddress, signUpPassword: formValues.password });
-    console.log("email " + this.state.signUpEmail);
-    console.log("password " + this.state.signUpPassword);
-
     await firebase
     .auth()
     .createUserWithEmailAndPassword(this.state.signUpEmail, this.state.signUpPassword)
@@ -182,7 +171,6 @@ export default class Login extends React.Component {
     await AsyncStorage.setItem("hasLoggedIn", "true");
 
     this.toggleSignUpModal();
-
 
       //create stripe account if he is a consultant
       const selectedPortal = await AsyncStorage.getItem('portal');
@@ -264,8 +252,6 @@ export default class Login extends React.Component {
   }
 
   async logInWithFacebook() {
-    //This line obtains a token. A good guide on how to set up Facebook login
-    // could be found on Expo website https://docs.expo.io/versions/latest/sdk/facebook.html
     const { type, token } = await Expo.Facebook.logInWithReadPermissionsAsync('344994569331151', {permissions: ['public_profile', 'email'],});
     if (type === 'success') {
       // Get the user's name using Facebook's Graph API
