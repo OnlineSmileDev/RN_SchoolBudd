@@ -23,6 +23,7 @@ export default class AvailabilityBlock extends React.Component {
       cardSelected: false,
       time: '',
       userID: '',
+      date: '',
     }
     console.log(JSON.stringify("AvailabilityBlock props " + JSON.stringify(props)));
   }
@@ -51,17 +52,36 @@ export default class AvailabilityBlock extends React.Component {
 //   });
 // }
 
-  componentDidMount() {
-    this.setState({ time: this.props.jedi.item.key});
+  componentDidMount = async() => {
+    await this.setState({ time: this.props.jedi.item.key});
+    await this.setState({ date: this.props.date.dateString});
+    console.log("time " + this.state.time);
+    console.log("date " + this.state.date);
+    this.checkHighlight();
+  }
+
+  checkHighlight = async() => {
+    var that = this;
+    firebase.database().ref('consultants').child(firebase.auth().currentUser.uid).child('availabilities')
+    .child(this.state.date).on('child_added', (snapshot) => {
+      var childKey = snapshot.key;
+      var childData = snapshot.val();
+      childData.key = childKey;
+      console.log("availibility block child data " + JSON.stringify(childData));
+      if (this.state.time == childData.timeSlot) {
+        that.setState({cardSelected: true});
+      }
+    });
+    console.log("highlight checked");
   }
 
   storeAvailability= async() => {
     if (!this.state.cardSelected) {
     this.setState({ cardSelected: !this.state.cardSelected});
-      const date = this.props.date.dateString
-      const time = this.state.time
-      const user = firebase.auth().currentUser
-      const uid = user.uid
+      const date = this.props.date.dateString;
+      const time = this.state.time;
+      const user = firebase.auth().currentUser;
+      const uid = user.uid;
 
       firebase.database().ref('consultants').child(uid).child("availabilities").child(date).push({
         timeSlot: time,
@@ -103,7 +123,7 @@ const styles = StyleSheet.create({
     height: Metrics.screenHeight* .1,
   },
   cardSelected: {
-    backgroundColor: 'powderblue',
+    backgroundColor: Colors.lightPurple,
   },
   cardNotSelected: {
     backgroundColor: 'white',
@@ -143,7 +163,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   buttonPressed: {
-    color: 'lightblue',
+    color: Colors.lightPurple,
   },
   buttonNotPressed: {
     color: 'black',

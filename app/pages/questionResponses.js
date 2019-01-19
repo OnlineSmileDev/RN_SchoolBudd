@@ -3,20 +3,15 @@ import { StyleSheet, Text, View, ActivityIndicator, TouchableOpacity, Image, Asy
 import Metrics from '../Themes/Metrics';
 import Colors from '../Themes/Colors';
 import Images from '../Themes/Images';
-import { Card, ListItem, Slider, CheckBox, SearchBar } from 'react-native-elements'
+import { Card, ListItem, Slider, CheckBox, SearchBar, Avatar } from 'react-native-elements'
 import firebase from 'firebase';
 import { NavigationActions } from 'react-navigation';
 import AnswerBlock from '../components/answerBlock';
 import Modal from "react-native-modal";
 
 
-/*
-  Displays a Jedi ID Card
-
-  start at
-  load more
-*/
 export default class QuestionResponses extends React.Component {
+
 
   static navigationOptions = {
     headerTitle: 'Responses',
@@ -27,26 +22,28 @@ export default class QuestionResponses extends React.Component {
     this.state = {
       jedisSectioned: [{title: 'Jedis',data:[]}],
       profileName: '',
+      profileImage : '',
       userID: firebase.auth().currentUser.uid,
       loading: false,
       refreshing: false,
       question: '',
+      topic : '',
       answer: '',
       isAnswerModalVisible: false,
       key: '',
       userName: '',
     }
-    console.log("props QuestionResponsesScreen " + JSON.stringify(props));
+    // console.log("props QuestionResponsesScreen " + JSON.stringify(props));
   }
 
   componentWillMount= async() => {
 
   var userUID = firebase.auth().currentUser.uid;
   var name;
-  console.log("uid " + userUID);
+  // console.log("uid " + userUID);
   var that = this;
 
-  firebase.auth().onAuthStateChanged(function(user) {
+  await firebase.auth().onAuthStateChanged(function(user) {
     if (user) {
       console.log(" User is signed in.");
       // console.log("name " + firebase.database().ref('users').child(userUID).child('name'));
@@ -55,7 +52,7 @@ export default class QuestionResponses extends React.Component {
         var childData = snapshot.val();
         childData.key = childKey;
         name = childData.name;
-        that.setState({ userName: name});
+        that.setState({ userName: name, profileImage : childData.profilePicture});
       });
     } else {
       console.log(" User is not signed in.");
@@ -63,10 +60,10 @@ export default class QuestionResponses extends React.Component {
   });
   item = this.props.navigation.state.params.item;
 
-  console.log("QuestionResponsesScreen item " + JSON.stringify(this.props.navigation.state.params.item));
-  console.log("QuestionResponsesScreen key " + JSON.stringify(this.props.navigation.state.params.item.key));
-  await this.setState({profileName: item.author, question: item.question, key: this.props.navigation.state.params.item.key });
-  console.log("question key " + this.state.key);
+  // console.log("QuestionResponsesScreen item " + JSON.stringify(this.props.navigation.state.params.item));
+  // console.log("QuestionResponsesScreen key " + JSON.stringify(this.props.navigation.state.params.item.key));
+  await this.setState({profileName: item.author, profileImage : item.profileImage, question: item.question, topic : item.topic, key: this.props.navigation.state.params.item.key });
+  // console.log("question key " + this.state.key);
   this.appendJedis(3,1);
   }
 
@@ -128,29 +125,31 @@ export default class QuestionResponses extends React.Component {
 
   async appendJedis(count, start) {
 
-    firebase.database().ref('forum').child(this.state.key).child('answers').on('child_added', (snapshot) => {
-      console.log("testing loading answers");
+    await this.setState({loading : true, refreshing: true});
+    var jedisList = this.state.jedisSectioned[0].data.slice();
+    await firebase.database().ref('forum').child(this.state.key).child('answers').on('child_added', async(snapshot) => {
       var childKey = snapshot.key;
       var childData = snapshot.val();
       childData.key = childKey;
-      console.log("childData " + JSON.stringify(childData));
       // questionText = childData.question.toLowerCase();
       // searchTextLowercase = this.state.searchText.toLowerCase();
-      var jedisList = this.state.jedisSectioned[0].data.slice();
       // if (questionText.includes(searchTextLowercase)) {
         // if (this.state.currentTopic == "Select a Question Topic" || this.state.currentTopic == "All Topics") {
-          jedisList.push(childData);
+      await jedisList.push(childData);
         // } else if (childData.topic == this.state.currentTopic) {
         //   jedisList.push(childData);
         // }
     // }
-      this.setState({loading: false, refreshing: false, jedisSectioned: [{title: 'Jedis', data:jedisList}]});
     });
 
-  console.log("jedis " + JSON.stringify(this.state.jedisSectioned));
-  this.state.jedisSectioned.forEach(function(element) {
-    console.log("jedi " + element.value)
-  });
+    jedisList.sort(function(a,b) { 
+      if(a.totalUpvotes == b.totalUpvotes) return 0;
+      var direction = 1;
+      return b.totalUpvotes>a.totalUpvotes?direction:-direction;
+    });
+    console.log("result : " + JSON.stringify(jedisList));
+    await this.setState({loading: false, refreshing: false, jedisSectioned: [{title: 'Jedis', data:jedisList}]});
+
   }
 
   listItemRenderer(item) {
@@ -163,6 +162,9 @@ export default class QuestionResponses extends React.Component {
     );
   }
 
+  purchaseItem= async (item) => {
+    this.props.navigation.navigate('AnswerScreen', {item: item, question: this.state.question, topic : this.state.topic});
+  }
   resetList = async () => {
     await this.setState({refreshing: true, jedisSectioned: [{title: 'Jedis', data:[]}]});
     this.appendJedis(3,1);
@@ -186,24 +188,53 @@ export default class QuestionResponses extends React.Component {
     await firebase.database().ref('forum').child(this.state.key).child('answers').push({
         answer: this.state.answer,
         author: this.state.userName,
-        totalUpvotes: 0,
-        upvotes: 0,
-        downvotes: 0,
+        downvotes : 0,
+        totalUpvotes : 0,
+        upvotes : 0,
+        profileImage : '',
       });
     this.setState({ isAnswerModalVisible: false});
   }
 
+  myImageButton() {
+    if(this.state.profileImage){
+      return(
+        <Avatar
+          size="large"
+          source={{uri : this.state.profileImage}}
+          activeOpacity={0.7}
+          rounded
+        />
+      );
+    } else {
+      return(
+        <Avatar
+          size="large"
+          source={Images.profile}
+          activeOpacity={0.7}
+          rounded
+        />);
+    }
+  }
   _keyExtractor = (item, index) => index;
 
   render() {
 
     return (
         <View style={styles.container}>
-          <Card style={styles.card}
-              title={this.state.question}>
-              <Text style={styles.textStyles}>
-              Author: {this.state.profileName}
-              </Text>
+          <Card style={styles.card}>
+              <View style={{flexDirection : 'row', marginBottom : 15}}>
+                {this.myImageButton()}
+                <Text style={{lineHeight : 30, fontSize :15, marginLeft: 20, fontWeight : '200'}}>
+                {this.state.profileName}
+                </Text>
+              </View>
+              <View style={{marginBottom: 10}}>
+                <Text style={{fontSize: 18, marginLeft : 15, fontWeight: 'bold'}}>{this.state.question}</Text>
+              </View>
+              <View style={{marginBottom: 15}}>
+                <Text style={{fontSize: 13, marginLeft : 15, color : '#888'}}>Topic : {this.state.topic}</Text>
+              </View>
               <Button
                 icon={{name: 'code'}}
                 backgroundColor='#03A9F4'
@@ -232,12 +263,12 @@ export default class QuestionResponses extends React.Component {
                        onSubmitEditing={(text) => this.setState({answer: text})}
                        />
                    <Button
-                     color='powderblue'
+                     color={Colors.lightPurple}
                      buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 5, marginTop: 5}}
                      title='Post'
                      onPress={() => this.onPressPostAnswer()}/>
                    <Button
-                     color='powderblue'
+                     color={Colors.lightPurple}
                      buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 5, marginTop: 5}}
                      title='Cancel'
                      onPress={() => this.setState({ isAnswerModalVisible: false})}/>
@@ -256,7 +287,6 @@ export default class QuestionResponses extends React.Component {
                 onRefresh = {() => this.resetList()}
                 refreshing = {this.state.refreshing}
                 removeClippedSubviews = {true}
-                ListFooterComponent = {<ActivityIndicator />}
               />
               </View>
         </View>
@@ -283,6 +313,11 @@ const styles = StyleSheet.create({
     width: Metrics.images.large,
     borderRadius: Metrics.images.large * 0.5
   },
+  itemList: {
+    height: Metrics.screenHeight*.65,
+    width: Metrics.screenWidth,
+    paddingTop: 10
+  },
   pictureDetails: {
     flexDirection: 'column',
     marginLeft: Metrics.marginHorizontal,
@@ -303,17 +338,13 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   modalView: {
-    // width: Metrics.screenWidth,
     height: Metrics.screenHeight*.6,
     borderStyle: 'solid',
     borderWidth: .5,
     alignItems: 'center',
     justifyContent: 'space-around',
     backgroundColor: 'white',
-    borderBottomLeftRadius: 15,
-    borderBottomRightRadius: 15,
-    borderTopLeftRadius: 15,
-    borderTopRightRadius: 15,
+    borderRadius: 15,
   },
   modalText: {
     fontSize: 24,

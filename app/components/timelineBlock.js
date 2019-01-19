@@ -4,9 +4,7 @@ import Metrics from '../Themes/Metrics';
 import Colors from '../Themes/Colors';
 import Images from '../Themes/Images';
 import { Card, ListItem, Button, Slider, CheckBox, SearchBar } from 'react-native-elements'
-import firebase from 'firebase';
-import Modal from 'react-native-modal';
-import { FontAwesome, Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+
 
 export default class TimelineBlock extends React.Component {
 
@@ -18,16 +16,12 @@ export default class TimelineBlock extends React.Component {
       time: '',
       userID: '',
     }
+    console.log(JSON.stringify("timelineBlock props " + JSON.stringify(props)));
   }
 
   render() {
     return (
       <View style={styles.cardView}>
-        {/* <Card
-          containerStyle= {this.state.cardSelected ? styles.cardSelected : styles.cardNotSelected}
-          wrapperStyle= {this.state.cardSelected ? styles.cardSelected : styles.cardNotSelected}
-          title={this.props.jedi.item}>
-        </Card> */}
         <Text style = {styles.itemTxt}>{this.props.jedi.item}</Text>
       </View>
     );
@@ -41,16 +35,12 @@ const styles = StyleSheet.create({
     borderRadius: Metrics.buttonRadius,
     padding: 10,
     backgroundColor: 'white',
-    marginTop: 10,
+    marginTop: 15,
     justifyContent: 'center',
-    minHeight: 50,
+    minHeight: 60,
+    borderWidth: 1,
+    borderColor: Colors.lightPurple
 
-  },
-  cardSelected: {
-    backgroundColor: 'powderblue',
-  },
-  cardNotSelected: {
-    backgroundColor: 'white',
   },
   itemTxt: {
     fontSize: 18,

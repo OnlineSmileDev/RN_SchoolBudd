@@ -20,12 +20,7 @@ import firebase from 'firebase';
 import {CheckBox} from 'react-native-elements'
 import Modal from 'react-native-modal';
 import LoggedOut from '../components/loggedOutScreen';
-
-
-
-/*
-for scaling, can use sql, or use a backend developer (firebase)
-*/
+import Colors from '../Themes/Colors'
 
 
 export default class UploadSaleConsultant extends React.Component {
@@ -161,12 +156,12 @@ export default class UploadSaleConsultant extends React.Component {
           <Button
             onPress={() => this.onPressUploadPicture()}
             title="Upload Profile Pic"
-            color="lightblue"
+            color={Colors.lightPurple}
           />
           <Button
             onPress={() => this.onPressTakePicture()}
             title="Take Profile Pic"
-            color="lightblue"/>
+            color={Colors.lightPurple}/>
         </View>)
 
     } else {
@@ -263,11 +258,7 @@ const styles = StyleSheet.create({
     borderStyle: 'solid',
     borderWidth: .5,
     backgroundColor: 'white',
-    borderBottomLeftRadius: 15,
-    borderBottomRightRadius: 15,
-    borderTopLeftRadius: 15,
-    borderTopRightRadius: 15,
-    //  padding: 10,
+    borderRadius: 15,
   },
   picture: {
     height: Metrics.screenHeight * .3,
@@ -276,16 +267,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     resizeMode: 'contain',
     margin: 20,
-    //  padding: 10,
   },
   inputText: {
     flex: 1,
     backgroundColor: 'white',
     flexDirection: 'row',
-    borderBottomLeftRadius: 15,
-    borderBottomRightRadius: 15,
-    borderTopLeftRadius: 15,
-    borderTopRightRadius: 15,
+    borderRadius: 15,
     borderStyle: 'solid',
     borderWidth: .5,
     margin: 7,
@@ -298,10 +285,7 @@ const styles = StyleSheet.create({
     flex: 2,
     backgroundColor: 'white',
     flexDirection: 'row',
-    borderBottomLeftRadius: 15,
-    borderBottomRightRadius: 15,
-    borderTopLeftRadius: 15,
-    borderTopRightRadius: 15,
+    borderRadius: 15,
     borderStyle: 'solid',
     borderWidth: .5,
     margin: 7,
@@ -318,7 +302,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginTop: 20,
     marginBottom: 55,
-    backgroundColor: 'lightblue',
+    backgroundColor: Colors.lightPurple,
   },
   postButtonText: {
     color: 'white',
@@ -329,17 +313,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   modalView: {
-    // width: Metrics.screenWidth,
     height: Metrics.screenHeight * .6,
     borderStyle: 'solid',
     borderWidth: .5,
     alignItems: 'center',
     justifyContent: 'space-around',
     backgroundColor: 'white',
-    borderBottomLeftRadius: 15,
-    borderBottomRightRadius: 15,
-    borderTopLeftRadius: 15,
-    borderTopRightRadius: 15,
+    borderRadius: 15,
   },
   modalText: {
     fontSize: 24,

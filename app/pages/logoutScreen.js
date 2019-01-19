@@ -3,6 +3,7 @@ import { StyleSheet, View, Text, Button, TouchableOpacity, AsyncStorage } from '
 import Metrics from '../Themes/Metrics';
 import { FontAwesome, Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import firebase from 'firebase';
+import Colors from '../Themes/Colors'
 
 export default class Logout extends React.Component {
 
@@ -10,39 +11,48 @@ export default class Logout extends React.Component {
      title: 'Logout',
    };
 
-  onPressLogout = async() => {
-    await AsyncStorage.setItem("hasLoggedIn", "false");
-    const logoutCheck = await AsyncStorage.getItem("hasLoggedIn");
-    console.log("hasLoggedOut" + logoutCheck);
-    console.log("jimmmmmmmmm");
-    await firebase.auth().signOut();
-    this.props.navigation.navigate('Home');
+    onPressLogout = async() => {
+      console.log("props " + JSON.stringify(this.props));
+      await AsyncStorage.setItem("hasLoggedIn", "false");
+      const logoutCheck = await AsyncStorage.getItem("hasLoggedIn");
+      console.log("hasLoggedOut" + logoutCheck);
+      console.log("jimmmmmmmmm");
+      await firebase.auth().signOut();
+      await AsyncStorage.setItem('portal', '');
+      this.props.navigation.navigate("SelectPortalScreen", this.props.screenProps);
+    }
+
+    render() {
+      const { navigate } = this.props.navigation;
+
+        return (
+            <View style={styles.container}>
+              <View style={styles.feedbackBox}>
+              <Text style={styles.textStyles}>Here at MoveItMoveIt, we appreciate your usage of the app. </Text>
+
+              <View style={styles.buttonsRow}>
+
+
+                <View>
+                  <Button
+                  title="Logout"
+                  onPress={() => this.onPressLogout()}
+                  color={Colors.lightPurple}/>
+                </View>
+
+              </View>
+
+                </View>
+            </View>
+        );
+    }
   }
 
-  render() {
-    const { navigate } = this.props.navigation;
-    return (
-      <View style={styles.container}>
-        <View style={styles.feedbackBox}>
-          <Text style={styles.textStyles}>Here at MoveItMoveIt, we appreciate your usage of the app. </Text>
-          <View style={styles.buttonsRow}>
-            <View>
-              <Button
-                title="Logout"
-                onPress={() => this.onPressLogout()}
-                color="powderblue"/>
-            </View>
-          </View>
-        </View>
-      </View>
-    );
-  }
-}
 
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: 'powderblue',
+      backgroundColor: Colors.lightPurple,
       alignItems: 'center',
       justifyContent: 'center'
     },
@@ -54,10 +64,7 @@ const styles = StyleSheet.create({
       padding: 10,
       borderStyle: 'solid',
       borderWidth: 0.5,
-      borderTopLeftRadius: Metrics.screenWidth*.05,
-      borderTopRightRadius: Metrics.screenWidth*.05,
-      borderBottomLeftRadius: Metrics.screenWidth*.05,
-      borderBottomRightRadius: Metrics.screenWidth*.05,
+      borderRadius: Metrics.screenWidth * .05,
       backgroundColor: 'white',
     },
     textStyles: {
@@ -65,14 +72,13 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       textAlign: 'center',
       fontSize: 20,
-      // color: 'white',
     },
     logoutButton: {
       width: Metrics.screenWidth*.7,
       height: Metrics.screenHeight*.05,
       borderWidth: 1,
       marginBottom: 55,
-      backgroundColor: 'lightblue',
+      backgroundColor: Colors.lightPurple,
       alignItems: 'center',
       justifyContent: 'center',
     },

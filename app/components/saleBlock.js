@@ -3,10 +3,12 @@ import { StyleSheet, Text, View, Image, ActivityIndicator, TouchableOpacity, Asy
 import Metrics from '../Themes/Metrics';
 import Colors from '../Themes/Colors';
 import Images from '../Themes/Images';
-import { Card, ListItem, Button, Slider, CheckBox, SearchBar } from 'react-native-elements'
+import { Card, ListItem, Button, Slider, CheckBox, SearchBar, Avatar } from 'react-native-elements'
 import firebase from 'firebase';
 import { WebBrowser } from 'expo';
 import { AppInstalledChecker, CheckPackageInstallation } from 'react-native-check-app-install';
+import metrics from '../Themes/Metrics';
+
 
 export default class SaleBlock extends React.Component {
 
@@ -40,6 +42,7 @@ export default class SaleBlock extends React.Component {
   }
 
   componentWillMount =async() => {
+    console.log("SaleBlock page open");
     var that = this;
     await firebase.database().ref('users').child(this.props.jedi.key).on('value', (snapshot) => {
       var childKey = snapshot.key;
@@ -53,11 +56,10 @@ export default class SaleBlock extends React.Component {
   onPressMessageSeller = async () => {
     console.log('testing message seller');
 
-    //if has skype get consultant skype name
-    //else prompt to download skype
     var url;
     if (this.state.skypeUsername !== "") {
       url = 'skype://' + this.state.skypeUsername + '?chat';
+
       Linking.canOpenURL(url).then(supported => {
       if (supported) {
         alert("Consultant has not set up skype account yet");
@@ -79,39 +81,68 @@ export default class SaleBlock extends React.Component {
     console.log("pressed message: ");
     this.props.messageBlock(this.state.convoKey);
   }
-
+  imageButton(){
+    if(this.state.profilePicture){
+      return(
+        <Avatar
+          size="xlarge"
+          source={{uri : this.state.profilePicture}}
+          activeOpacity={0.7}
+          rounded
+        />
+      );
+    } else 
+      return(
+        <Avatar
+          size="xlarge"
+          source={Images.profile}
+          activeOpacity={0.7}
+          rounded
+        />);
+  }
 
   render() {
     return (
-      <TouchableOpacity onPress={() => this.openConsultantScreen()}>
+      <TouchableOpacity 
+      // onPress={() => this.openConsultantScreen()}
+      >
         <View style={styles.cardView}>
           <Card style={styles.card}
-            title={this.state.name}
-            image={{uri: this.state.profilePicture}}
-            imageStyle={{ flex: 1}}
-            imageProps={{ resizeMode: 'contain'}}>
-            <Text style={styles.textStyles}>
-            Hometown: {this.state.cityState}
-            </Text>
-            <Text style={styles.textStyles}>
-            Affiliation: {this.state.schoolName}
-            </Text>
-            <Text style={styles.textStyles}>
-            Price: ${this.props.jedi.price}/hr
-            </Text>
-            <Button
-              icon={{name: 'code'}}
-              backgroundColor='#03A9F4'
-              buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 5, marginTop: 5}}
-              title='Book Appointment'
-              onPress={() => this.onPressBookAppointment()}/>
-            <Button
-              icon={{name: 'code'}}
-              backgroundColor='#03A9F4'
-              buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 5, marginTop: 5}}
-              title='Message Consultant'
-              onPress={() => this.onPressMessageSeller()}/>
-          </Card>
+              // title={this.state.name}
+              image={{uri: this.state.profilePicture}}
+              imageStyle={{ flex: 1,  marginLeft: 'auto', marginRight : 'auto', width : 300, height: 200}}
+              imageProps={{ resizeMode: 'cover'}}
+              >
+              <View style={{flexDirection :'row'}}>
+
+                {/* {this.imageButton()} */}
+                <View style={{flexDirection :'column'}}>
+                  <Text style={styles.textStyles}>
+                  Name: {this.state.name}
+                  </Text>
+                  <Text style={styles.textStyles}>
+                  Hometown: {this.state.cityState}
+                  </Text>
+                  <Text style={styles.textStyles}>
+                  Affiliation: {this.state.schoolName}
+                  </Text>
+                  <Text style={styles.textStyles}>
+                  Price: ${this.props.jedi.price}/hr
+                  </Text>
+                </View>
+              </View>
+              
+              <Button
+                icon={{name: 'code'}}
+                buttonStyle={{backgroundColor : Colors.lightPurple, borderColor : 'transparent', borderWidth : 0, borderRadius : 20, margin : 10}}
+                title='Book Appointment'
+                onPress={() => this.onPressBookAppointment()}/>
+              <Button
+                icon={{name: 'code'}}
+                buttonStyle={{backgroundColor : Colors.lightPurple, borderColor : 'transparent', borderWidth : 0, borderRadius : 20, margin : 10}}
+                title='Message Consultant'
+                onPress={() => this.onPressMessageSeller()}/>
+              </Card>
 
         </View>
       </TouchableOpacity>
@@ -124,6 +155,10 @@ const styles = StyleSheet.create({
   cardView: {
     width: Metrics.screenWidth,
     borderRadius: Metrics.buttonRadius,
+  },
+  card: {
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   pictureView: {
     marginLeft: Metrics.marginHorizontal,

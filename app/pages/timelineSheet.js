@@ -1,31 +1,39 @@
+
 import React from 'react';
 import {
-  AppRegistry, StyleSheet, Text, View, TouchableOpacity, StatusBar, Button,
+  AppRegistry, StyleSheet, Text, View, TouchableOpacity, StatusBar, 
   SectionList, ActivityIndicator, FlatList, TextInput, AsyncStorage} from 'react-native';
+import { Input
+  } from "native-base";
 import * as firebase from 'firebase'
 import TimelineBlock from '../components/timelineBlock';
+import { Button } from 'react-native-elements'
 import { FontAwesome, Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import Modal from "react-native-modal";
 import Metrics from '../Themes/Metrics';
-import Colors from '../Themes/Colors';
+import { globalStyles } from '../Themes/Styles';
+import Colors from '../Themes/Colors'
+import AskQuestionModal from '../components/askQuestionModal'
+
 
 export default class TimelineSheet extends React.Component {
 
   static navigationOptions = ({ navigation }) => {
     const params = navigation.state.params || {};
-    const { navigate } = navigation;
+    const { navigate, state } = navigation;
     return {
       headerTitle: params.year + " Year",
       title: 'Timeline',
       headerRight: (
-        <Feather style={{ marginRight: 15}}
+        <Feather
+          style={{ marginRight: 15}}
+          onPress={state.params.handleAdd}
           name="plus-circle"
           size={Metrics.icons.medium}
           color={Colors.lightPurple}
-          onPress={params.createQuestion}
         />
       ),
-    }
+      }
   };
 
   constructor(props) {
@@ -38,68 +46,60 @@ export default class TimelineSheet extends React.Component {
        goalText: '',
        year: '',
      }
+     console.log("timeline " + JSON.stringify(props));
    }
 
    _keyExtractor = (item, index) => item.key;
 
-  componentWillMount =async() => {
-    this.props.navigation.setParams({ createQuestion: this.toggleModal });
+   componentWillMount =async() => {
+     this.props.navigation.setParams({handleAdd : this.toggleModal});
+     await this.setState({ year: this.props.navigation.state.params.year});
+     var goalsArrayRetrieved = await AsyncStorage.getItem(JSON.stringify(this.state.year));
+     console.log("goals array retrieved " + goalsArrayRetrieved);
+     console.log("type goals array pre " + typeof goalsArrayRetrieved);
+     goalsArrayRetrieved = await JSON.parse(goalsArrayRetrieved);
+     console.log("type goals array post " + typeof goalsArrayRetrieved);
+     if ((goalsArrayRetrieved !== null) && (goalsArrayRetrieved.length !== 0)) {
+       await this.setState({goalsArray: goalsArrayRetrieved});
+   }
+   await console.log("goals array state post " + this.state.goalsArray);
+ }
 
-    await this.setState({ year: this.props.navigation.state.params.year});
-    var goalsArrayRetrieved = await AsyncStorage.getItem(JSON.stringify(this.state.year));
+   toggleModal = async() => {
+     this.setState({isModalVisible: !this.state.isModalVisible});
+   }
 
-    goalsArrayRetrieved = await JSON.parse(goalsArrayRetrieved);
-    
-    if ((goalsArrayRetrieved !== null) && (goalsArrayRetrieved.length !== 0)) {
-      await this.setState({goalsArray: goalsArrayRetrieved});
-    }
-    await console.log("goals array state post " + this.state.goalsArray);
-  }
+   onPressPushGoal = async() => {
+     var goals = this.state.goalsArray;
+     goals.push(this.state.goalText);
+     await this.setState({ goalsArray: goals});
+     console.log("goals array on push" + JSON.stringify(this.state.goalsArray));
+     this.setState({isModalVisible: !this.state.isModalVisible});
+   }
 
-  toggleModal = async() => {
-    this.setState({isModalVisible: !this.state.isModalVisible});
-  }
+   onPressSaveGoals = async() => {
+     console.log("goals array pre " + JSON.stringify(this.state.goalsArray));
+     await AsyncStorage.setItem(JSON.stringify(this.state.year), JSON.stringify(this.state.goalsArray));
+     var testArray = await AsyncStorage.getItem(JSON.stringify(this.state.year));
+     console.log("goals array post " + JSON.stringify(testArray));
+   }
 
-  onPressPushGoal = async() => {
-    var goals = this.state.goalsArray;
-    if(this.state.goalText){
-      goals.push(this.state.goalText);
-      await this.setState({ goalsArray: goals});
-      this.setState({isModalVisible: !this.state.isModalVisible});
-    }else {
-      alert("Please write question");
-    }
-    
-  }
+   listItemRenderer =(item) => {
+     return (
+       <TimelineBlock
+       jedi={item}/>
+     );
+   }
 
-  onPressSaveGoals = async() => {
-    await AsyncStorage.setItem(JSON.stringify(this.state.year), JSON.stringify(this.state.goalsArray));
-    var testArray = await AsyncStorage.getItem(JSON.stringify(this.state.year));
-  }
-
-  listItemRenderer =(item, key) => {
-    return (
-      <TimelineBlock
-        jedi={item}
-        key = {key}
-      />
-    );
-  }
-
-  _onPressBack(){
-    const {goBack} = this.props.navigation
-    goBack()
-  }
+  // _onPressBack(){
+  //   const {goBack} = this.props.navigation
+  //   goBack()
+  // }
 
   render() {
     return (
       <View style={styles.container}>
         <StatusBar barStyle="light-content"/>
-        <View>
-          <TouchableOpacity onPress={() => this._onPressBack() }>
-            <Text style = {styles.backBtn}>Back</Text>
-          </TouchableOpacity>
-        </View>
         <FlatList
           data={this.state.goalsArray}
           extraData={this.state}
@@ -111,26 +111,13 @@ export default class TimelineSheet extends React.Component {
         </TouchableOpacity>
 
         <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-          <Modal
+          <AskQuestionModal
             isVisible={this.state.isModalVisible}
             onBackdropPress={() => this.setState({ isModalVisible: false })}
-            backdropColor={'black'}>
-            <View style={styles.modalView}>
-              <Text style={styles.modalText}>
-                Ask a Question!
-              </Text>
-              <TextInput style={styles.inputText}
-                  placeholder="Ex: When are the common app essays released?"
-                  underlineColorAndroid="transparent"
-                  multiline={true}
-                  onChangeText={(text) => this.setState({goalText: text})}
-                  onSubmitEditing={(text) => this.setState({goalText: text})}
-                  />
-              <TouchableOpacity  onPress={() => this.onPressPushGoal()} style = {styles.selectBtn}>
-                <Text style = {styles.selectBtnTxt}>Add</Text>
-              </TouchableOpacity>
-            </View>
-          </Modal>
+            onChangeText={(text) => this.setState({goalText: text})}
+            onSubmitEditing={(text) => this.setState({goalText: text})}
+            onPress={() => this.onPressPushGoal()}
+          />
         </View>
       </View>
     );
@@ -139,42 +126,21 @@ export default class TimelineSheet extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: Colors.frost
+    flex: 1
   },
   modalView: {
-    height: Metrics.screenHeight*.6,
-    borderWidth: 1,
+    height: Metrics.screenHeight*.3,
+    padding: 15,
+    borderStyle: 'solid',
+    borderWidth: .5,
     alignItems: 'center',
     justifyContent: 'flex-start',
     backgroundColor: 'white',
     borderRadius: 15,
-    paddingTop: 25,
-  },
-  modalText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginVertical: 10,
-  },
-  inputText: {
-    fontSize: 16,
-    width: Metrics.screenWidth * .8,
-    borderBottomWidth: 1,
-    borderColor: Colors.steel,
-    paddingBottom: 5,
-    marginVertical: 15,
-  },
-  backBtn: {
-    fontSize: 15,
-    marginTop: 15,
-    marginLeft: 15,
-    color: Colors.lightPurple
   },
   saveBtn: {
     width: Metrics.screenWidth,
-    // marginLeft: 35,
-    height: 60,
-    borderRadius: 5,
+    height: 70,
     backgroundColor: Colors.lightPurple,
     alignItems:'center',
     justifyContent: 'center'
@@ -183,18 +149,4 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 20,
   },
-  selectBtn: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: 40,
-    width: Metrics.screenWidth*.7,
-    borderWidth: 1,
-    borderColor: Colors.lightPurple,
-    borderRadius: 20,
-    marginTop: 15
-  },
-  selectBtnTxt: {
-    color: Colors.lightPurple,
-    fontSize: 18,
-  }
 });

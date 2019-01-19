@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import {Calendar} from 'react-native-calendars';
 import Metrics from '../Themes/Metrics';
-import Colors from '../Themes/Colors';
+import Colors from '../Themes/Colors'
 
 export default class CalendarScreen extends React.Component {
   constructor(props) {
@@ -28,6 +28,7 @@ export default class CalendarScreen extends React.Component {
       propsCalendar: this.props.navigation.state.params.item.key, 
       bookingDate : day 
     });
+    // this.props.navigation.navigate('MakeAppointmentsScreen', { bookingDate : day })
   }
 
   _onPressBack(){
@@ -38,25 +39,19 @@ export default class CalendarScreen extends React.Component {
     return (
       <View style={styles.container}>
         <StatusBar barStyle="light-content"/>
-        <View>
-        <TouchableOpacity onPress={() => this._onPressBack() }>
-            <Text style = {styles.backBtn}>Back</Text>
-          </TouchableOpacity>
-        </View>
         <View style = {styles.calendarView}>
           <Calendar
             onDayPress={this.onDayPress}
             style={styles.calendar}
-            hideExtraDays
+            minDate={Date()-1}
             markedDates={{[this.state.selected]: {selected: true}}}
             theme={{
-              selectedDayBackgroundColor: 'green',
-              todayTextColor: 'green',
-              arrowColor: 'green',
+              selectedDayBackgroundColor: 'purple',
+              todayTextColor: 'purple',
+              arrowColor: 'purple',
             }}
           />
         </View>
-        
       </View>
     );
   }
@@ -65,23 +60,16 @@ export default class CalendarScreen extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.frost
+
   },
   calendar: {
-    borderTopWidth: 1,
+    borderWidth: 1,
+    borderColor: Colors.lightPurple,
     paddingTop: 5,
-    borderBottomWidth: 1,
-    borderColor: '#eee',
     height: 350
   },
-  backBtn: {
-    fontSize: 15,
-    marginTop: 15,
-    marginLeft: 15,
-    color: Colors.lightPurple
-  },
   calendarView: {
-    marginTop: 30,
+    marginTop: 50,
     width: Metrics.screenWidth*.9,
     flex: 1,
     marginLeft: Metrics.screenWidth*.05

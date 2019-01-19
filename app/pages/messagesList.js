@@ -19,7 +19,7 @@ export default class MessagesList extends React.Component {
         <Feather style={styles.icon}
           name="menu"
           size={Metrics.icons.medium}
-          color={'lightblue'}
+          color={Colors.lightPurple}
           onPress={() => navigate('DrawerToggle')}
         />
         )
@@ -121,13 +121,13 @@ export default class MessagesList extends React.Component {
           return (<LoggedOut/>);
       } else {
       return (
-        <FlatList
-          data={this.state.rooms}
-          renderItem={this._renderItem}
-          style={styles.container}
-          onRefresh = {() => this.resetList()}
-          refreshing = {this.state.refreshing}
-          keyExtractor={this._keyExtractor}/>
+          <FlatList
+            data={this.state.rooms}
+            renderItem={this._renderItem}
+            style={styles.container}
+            onRefresh = {() => this.resetList()}
+            refreshing = {this.state.refreshing}
+            keyExtractor={this._keyExtractor}/>
       );
     }
   }
@@ -136,15 +136,13 @@ export default class MessagesList extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // alignItems: 'center',
-    // justifyContent: 'center',
-    backgroundColor: 'powderblue',
+    backgroundColor: Colors.lightPurple,
   },
   messagesContainer: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'powderblue',
+    backgroundColor: Colors.lightPurple,
   },
   addChatContainer: {
     flexDirection: "row",

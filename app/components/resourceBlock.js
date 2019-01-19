@@ -8,15 +8,10 @@ import firebase from 'firebase';
 import Modal from 'react-native-modal';
 import { FontAwesome, Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 
-/*
-  Displays a Jedi ID Card
 
-  start at
-  load more
-*/
 export default class AvailabilityBlock extends React.Component {
 
-  constructor(props){
+  constructor(props) {
     super(props);
 
     this.state = {
@@ -32,16 +27,18 @@ export default class AvailabilityBlock extends React.Component {
   }
 
   componentDidMount() {
-    this.setState({ time: this.props.jedi.item.key})
+    this.setState({ time: this.props.jedi.item.key })
   }
+
   render() {
     return (
       <TouchableOpacity onPress={() => this.navigateResource()}>
         <View style={styles.cardView}>
           <Card
-            containerStyle= {this.state.cardSelected ? styles.cardSelected : styles.cardNotSelected}
-            wrapperStyle= {this.state.cardSelected ? styles.cardSelected : styles.cardNotSelected}
-            title={this.props.jedi.item.key}>
+            containerStyle={this.state.cardSelected ? styles.cardSelected : styles.cardNotSelected}
+            wrapperStyle={this.state.cardSelected ? styles.cardSelected : styles.cardNotSelected}
+            title={this.props.jedi.item.key}
+            titleStyle={this.state.cardSelected ? styles.cardTitleSelected : styles.cardTitleNotSelected}>
           </Card>
         </View>
       </TouchableOpacity>
@@ -51,14 +48,21 @@ export default class AvailabilityBlock extends React.Component {
 
 const styles = StyleSheet.create({
   cardView: {
-    width: Metrics.screenWidth,
+    width: Metrics.screenWidth - 30,
+    height: Metrics.screenHeight * .1,
+    marginHorizontal: 15,
+    marginTop: 20,
     borderRadius: Metrics.buttonRadius,
-    height: Metrics.screenHeight* .1,
   },
   cardSelected: {
-    backgroundColor: 'powderblue',
+    margin: 0,
+    borderRadius: Metrics.buttonRadius,
+    backgroundColor: Colors.lightPurple,
   },
   cardNotSelected: {
+    margin: 0,
+    borderRadius: Metrics.buttonRadius,
     backgroundColor: 'white',
+    borderColor: Colors.lightPurple,
   },
 });

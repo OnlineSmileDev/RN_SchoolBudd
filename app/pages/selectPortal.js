@@ -1,105 +1,82 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image, SafeAreaView, Button, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Image, SafeAreaView, AsyncStorage  } from 'react-native';
 import PropTypes from 'prop-types';
+
+import { Button } from 'react-native-elements'
 import Metrics from '../Themes/Metrics';
+import Colors from '../Themes/Colors'
 
-export default class OnboardingScreen extends React.Component {
-
+export default class SelectPortalScreen extends React.Component {
   static navigationOptions = ({ navigation }) => {
     const params = navigation.state.params || {};
   };
 
-  static propTypes = {
-      selectPortalStudent: PropTypes.func.isRequired,
-      selectPortalConsultant: PropTypes.func.isRequired,
-      selectPortalSchool: PropTypes.func.isRequired,
-      selectPortalParent: PropTypes.func.isRequired,
-  };
-
-  _selectPortalStudent = () => {
+  _selectPortalStudent = async() => {
+    console.log("props " + JSON.stringify(this.props));
     if (this.props.selectPortalStudent) {
       console.log("props " + this.props);
       console.log("select portal working");
       this.props.selectPortalStudent();
+      } else {
+        await AsyncStorage.setItem('portal', 'student');
       }
   }
 
-  _selectPortalConsultant = () => {
+  _selectPortalConsultant = async() => {
     if (this.props.selectPortalConsultant) {
       console.log("props " + this.props);
       console.log("select portal working");
       this.props.selectPortalConsultant();
-      }
-  }
-
-  _selectPortalSchool = () => {
-    if (this.props.selectPortalSchool) {
-      console.log("props " + this.props);
-      console.log("select portal working");
-      this.props.selectPortalSchool();
-      }
-  }
-
-  _selectPortalParent = () => {
-    if (this.props.selectPortalParent) {
-      console.log("props " + this.props);
-      console.log("select portal working");
-      this.props.selectPortalParent();
+      } else {
+        await AsyncStorage.setItem('portal', 'consultant');
       }
   }
 
   render() {
     return (
-      <View style={styles.container}>
-        <Text style={styles.titleTxt}>MoveItMoveIt</Text>
-        <TouchableOpacity 
-          style = {styles.btnView}
-          onPress={this._selectPortalStudent}>
-          <Text style = {styles.btnLabel}>Students</Text>
-        </TouchableOpacity>
-        <TouchableOpacity 
-          style = {styles.btnView}
-          onPress={this._selectPortalConsultant}>
-          <Text style = {styles.btnLabel}>Consultants</Text>
-        </TouchableOpacity>
-        <TouchableOpacity 
-          style = {styles.btnView}
-          onPress={this._selectPortalSchool}>
-          <Text style = {styles.btnLabel}>Educators</Text>
-        </TouchableOpacity>
-        <TouchableOpacity 
-          style = {styles.btnView}
-          onPress={this._selectPortalParent}>
-          <Text style = {styles.btnLabel}>Parents</Text>
-        </TouchableOpacity>
-      </View>
+      <SafeAreaView style={styles.container}>
+        <View style={styles.feedbackBox}>
+          <Text style={styles.textStyles}>Are you a student or a consultant?</Text>
+          <Button
+          title="Students"
+          buttonStyle={ styles.selectTxt}
+          onPress={this._selectPortalStudent}/>
+
+          <Button
+          title="Consultants"
+          buttonStyle={ styles.selectTxt}
+          onPress={this._selectPortalConsultant}/>
+
+        </View>
+      </SafeAreaView>
     );
   }
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    width: Metrics.screenWidth,
+    height: Metrics.screenHeight,
+    // flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  titleTxt: {
-    fontSize: 30,
-    fontWeight: 'bold',
-    marginBottom: 15
+  contentImage: {
+    height: Metrics.screenHeight*.35,
+    width: Metrics.screenWidth*.5,
+    borderRadius: 15
   },
-  btnView: {
-    marginTop: 15,
-    backgroundColor: '#30baec',
-    height: 40,
-    borderRadius: 20,
-    width: Metrics.screenWidth*0.7,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },  
-  btnLabel: {
-    fontSize: 18,
-    color: 'white',
+  textStyles : {
+    textAlign : 'center',
+    fontSize : 20,
+    fontWeight : 'bold',
+  },
+  selectTxt:  {
+    backgroundColor : Colors.lightPurple, 
+    borderColor : 'transparent', 
+    borderWidth : 0, 
+    borderRadius : 20, 
+    margin : 15
   }
 });

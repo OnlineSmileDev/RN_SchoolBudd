@@ -21,26 +21,28 @@ import {CheckBox} from 'react-native-elements'
 import Modal from 'react-native-modal';
 import { FontAwesome, Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import LoggedOut from '../components/loggedOutScreen';
-import Colors from '../Themes/Colors';
+import Colors from '../Themes/Colors'
+
+
 
 export default class ProfileConsultantBasicInfo extends React.Component {
 
   static navigationOptions = ({ navigation }) => {
-    const params = navigation.state.params || {};
-    const { navigate } = navigation;
-    return {
-      headerTitle: 'Basic Info',
-      title: 'Basic Info',
-      headerLeft: (
-        <Feather style={styles.icon}
-          name="menu"
-          size={Metrics.icons.medium}
-          color={'lightblue'}
-          onPress={() => navigate('DrawerToggle')}
-        />
+  const params = navigation.state.params || {};
+  const { navigate } = navigation;
+  return {
+    headerTitle: 'Basic Info',
+    title: 'Basic Info',
+    headerLeft: (
+      <Feather style={styles.icon}
+        name="menu"
+        size={Metrics.icons.medium}
+        color={Colors.lightPurple}
+        onPress={() => navigate('DrawerToggle')}
+      />
       )
     }
-  };
+};
 
   constructor(props) {
     super(props);
@@ -200,7 +202,10 @@ export default class ProfileConsultantBasicInfo extends React.Component {
   };
 
   render() {
+
     let {image} = this.state;
+
+
     let contentView = null;
     if (this.state.image === '') {
       contentView =
@@ -208,12 +213,12 @@ export default class ProfileConsultantBasicInfo extends React.Component {
           <Button
             onPress={() => this.onPressUploadPicture()}
             title="Upload Profile Pic"
-            color="lightblue"
+            color={Colors.lightPurple}
           />
           <Button
             onPress={() => this.onPressTakePicture()}
             title="Take Profile Pic"
-            color="lightblue"/>
+            color={Colors.lightPurple}/>
         </View>)
 
     } else {
@@ -228,111 +233,113 @@ export default class ProfileConsultantBasicInfo extends React.Component {
 
     return (
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+
         <KeyboardAwareScrollView>
           <SafeAreaView style={styles.container}>
+
             <View style={styles.pictureBox}>
               {contentView}
             </View>
 
             <View style={styles.itemInformation}>
-              <TextInput 
-                style={styles.inputText}
-                placeholder="City, State (ex: Atlanta, GA)"
-                underlineColorAndroid="transparent"
-                onChangeText={(text) => this.setState({cityState: text})}
-                onSubmitEditing={() => this.onSubmitEditingItem(this.state.searchText)}
+
+              <TextInput style={styles.inputText}
+                         placeholder="City, State (ex: Atlanta, GA)"
+                         underlineColorAndroid="transparent"
+                         onChangeText={(text) => this.setState({cityState: text})}
+                         onSubmitEditing={() => this.onSubmitEditingItem(this.state.searchText)}
               />
 
               <CheckBox
-                center
-                title={this.state.typeConsultant}
-                iconRight
-                iconType='material'
-                uncheckedIcon='add'
-                textStyle={{fontWeight: 'normal', color: 'gray'}}
-                containerStyle={{width: Metrics.screenWidth * .85}}
-                onPress={() => this.onPressType()}
-              />
+              center
+              title={this.state.typeConsultant}
+              iconRight
+              iconType='material'
+              uncheckedIcon='add'
+              textStyle={{fontWeight: 'normal', color: 'gray'}}
+              containerStyle={{width: Metrics.screenWidth * .85}}
+              onPress={() => this.onPressType()}
+            />
 
-              <View style={{alignItems: 'center', justifyContent: 'center'}}>
-                <Modal
-                  isVisible={this.state.isTypeModalVisible}
-                  onBackdropPress={() => this.setState({isTypeModalVisible: false})}
-                  backdropColor={'black'}>
-                  <View style={styles.modalView}>
-                    <Text style={styles.modalText}>
-                      Pick a Category!
-                    </Text>
-                    <Button
-                      backgroundColor='#03A9F4'
-                      buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 5, marginTop: 5}}
-                      title='IECA Consultant'
-                      onPress={() => this.onPressIECA()}/>
-                    <Button
-                      backgroundColor='#03A9F4'
-                      buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 5, marginTop: 5}}
-                      title='Current College Student'
-                      onPress={() => this.onPressCurrentStudent()}/>
-                  </View>
-                </Modal>
-              </View>
-
-              <TextInput 
-                style={styles.inputText}
-                placeholder="School Name (if current student) or Company Name"
-                underlineColorAndroid="transparent"
-                onChangeText={(text) => this.setState({schoolName: text})}
-                onSubmitEditing={() => this.onSubmitEditingPrice(this.state.searchText)}
-              />
-
-              <CheckBox
-                center
-                title={this.state.yearsConsultant}
-                iconRight
-                iconType='material'
-                uncheckedIcon='add'
-                textStyle={{fontWeight: 'normal', color: 'gray'}}
-                containerStyle={{width: Metrics.screenWidth * .85}}
-                onPress={() => this.onPressYears()}
-              />
-
-              <View style={{alignItems: 'center', justifyContent: 'center'}}>
-                <Modal
-                  isVisible={this.state.isYearsModalVisible}
-                  onBackdropPress={() => this.setState({isYearsModalVisible: false})}
-                  backdropColor={'black'}>
-                  <View style={styles.modalView}>
-                    <Text style={styles.modalText}>
-                      Years as Consultant!
-                    </Text>
-                    <Button
-                      backgroundColor='#03A9F4'
-                      buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 5, marginTop: 5}}
-                      title='0 - 1 Years'
-                      onPress={() => this.onPressZeroToOne()}/>
-                    <Button
-                      backgroundColor='#03A9F4'
-                      buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 5, marginTop: 5}}
-                      title='2 - 3 Years'
-                      onPress={() => this.onPressTwoToThree()}/>
-                    <Button
-                      backgroundColor='#03A9F4'
-                      buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 5, marginTop: 5}}
-                      title='4 - 5 Years'
-                      onPress={() => this.onPressFourToFive()}/>
-                    <Button
-                      backgroundColor='#03A9F4'
-                      buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 5, marginTop: 5}}
-                      title='> 5 Years'
-                      onPress={() => this.onPressGreaterThanFive()}/>
-                  </View>
-                </Modal>
-              </View>
+            <View style={{alignItems: 'center', justifyContent: 'center'}}>
+              <Modal
+                isVisible={this.state.isTypeModalVisible}
+                onBackdropPress={() => this.setState({isTypeModalVisible: false})}
+                backdropColor={'black'}>
+                <View style={styles.modalView}>
+                  <Text style={styles.modalText}>
+                    Pick a Category!
+                  </Text>
+                  <Button
+                    backgroundColor='#03A9F4'
+                    buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 5, marginTop: 5}}
+                    title='IECA Consultant'
+                    onPress={() => this.onPressIECA()}/>
+                  <Button
+                    backgroundColor='#03A9F4'
+                    buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 5, marginTop: 5}}
+                    title='Current College Student'
+                    onPress={() => this.onPressCurrentStudent()}/>
+                </View>
+              </Modal>
             </View>
 
-            <TouchableOpacity 
-              style={styles.postButton}
-              onPress={() => this.onPressSaveObject()}>
+              <TextInput style={styles.inputText}
+                         placeholder="School Name (if current student) or Company Name"
+                         underlineColorAndroid="transparent"
+                         onChangeText={(text) => this.setState({schoolName: text})}
+                         onSubmitEditing={() => this.onSubmitEditingPrice(this.state.searchText)}
+              />
+
+              <CheckBox
+                        center
+                        title={this.state.yearsConsultant}
+                        iconRight
+                        iconType='material'
+                        uncheckedIcon='add'
+                        textStyle={{fontWeight: 'normal', color: 'gray'}}
+                        containerStyle={{width: Metrics.screenWidth * .85}}
+                        onPress={() => this.onPressYears()}
+                      />
+
+                      <View style={{alignItems: 'center', justifyContent: 'center'}}>
+                        <Modal
+                          isVisible={this.state.isYearsModalVisible}
+                          onBackdropPress={() => this.setState({isYearsModalVisible: false})}
+                          backdropColor={'black'}>
+                          <View style={styles.modalView}>
+                            <Text style={styles.modalText}>
+                              Years as Consultant!
+                            </Text>
+                            <Button
+                              backgroundColor='#03A9F4'
+                              buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 5, marginTop: 5}}
+                              title='0 - 1 Years'
+                              onPress={() => this.onPressZeroToOne()}/>
+                            <Button
+                              backgroundColor='#03A9F4'
+                              buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 5, marginTop: 5}}
+                              title='2 - 3 Years'
+                              onPress={() => this.onPressTwoToThree()}/>
+                            <Button
+                              backgroundColor='#03A9F4'
+                              buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 5, marginTop: 5}}
+                              title='4 - 5 Years'
+                              onPress={() => this.onPressFourToFive()}/>
+                            <Button
+                              backgroundColor='#03A9F4'
+                              buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 5, marginTop: 5}}
+                              title='> 5 Years'
+                              onPress={() => this.onPressGreaterThanFive()}/>
+                          </View>
+                        </Modal>
+                      </View>
+
+            </View>
+
+
+            <TouchableOpacity style={styles.postButton}
+                              onPress={() => this.onPressSaveObject()}>
               <View>
                 <Text style={styles.postButtonText}>
                   Update Profile
@@ -343,9 +350,11 @@ export default class ProfileConsultantBasicInfo extends React.Component {
           </SafeAreaView>
         </KeyboardAwareScrollView>
       </TouchableWithoutFeedback>
+
+
     );
   }
-  }
+}
 }
 
 const styles = StyleSheet.create({
@@ -356,16 +365,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 20,
     marginTop: 5,
-    // backgroundColor: 'white',
   },
   itemInformation: {
     flex: 1.5,
     flexDirection: 'column',
-    //  alignItems: 'center',
-    //  justifyContent: 'space-around',
     margin: 20,
     backgroundColor: 'white',
-    //  padding: 15,
   },
   pictureBox: {
     height: Metrics.screenHeight * .3,
@@ -375,13 +380,9 @@ const styles = StyleSheet.create({
     marginLeft: 70,
     marginTop: 10,
     borderStyle: 'solid',
-    borderWidth: .5,
     backgroundColor: 'white',
-    borderBottomLeftRadius: 15,
-    borderBottomRightRadius: 15,
-    borderTopLeftRadius: 15,
-    borderTopRightRadius: 15,
-    //  padding: 10,
+    borderRadius: 15,
+    borderColor : Colors.lightPurple
   },
   picture: {
     height: Metrics.screenHeight * .3,
@@ -390,16 +391,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     resizeMode: 'contain',
     margin: 20,
-    //  padding: 10,
   },
   inputText: {
     flex: 1,
     backgroundColor: 'white',
     flexDirection: 'row',
-    borderBottomLeftRadius: 15,
-    borderBottomRightRadius: 15,
-    borderTopLeftRadius: 15,
-    borderTopRightRadius: 15,
+    borderRadius: 15,
     borderStyle: 'solid',
     borderWidth: .5,
     margin: 7,
@@ -412,10 +409,7 @@ const styles = StyleSheet.create({
     flex: 2,
     backgroundColor: 'white',
     flexDirection: 'row',
-    borderBottomLeftRadius: 15,
-    borderBottomRightRadius: 15,
-    borderTopLeftRadius: 15,
-    borderTopRightRadius: 15,
+    borderRadius: 15,
     borderStyle: 'solid',
     borderWidth: .5,
     margin: 7,
@@ -443,17 +437,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   modalView: {
-    // width: Metrics.screenWidth,
     height: Metrics.screenHeight * .6,
     borderStyle: 'solid',
     borderWidth: .5,
     alignItems: 'center',
     justifyContent: 'space-around',
     backgroundColor: 'white',
-    borderBottomLeftRadius: 15,
-    borderBottomRightRadius: 15,
-    borderTopLeftRadius: 15,
-    borderTopRightRadius: 15,
+    borderRadius: 15,
   },
   modalText: {
     fontSize: 24,
