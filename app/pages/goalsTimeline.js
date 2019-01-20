@@ -123,7 +123,11 @@ const styles = StyleSheet.create({
     margin : 15,
     justifyContent: 'center',
     alignItems: 'center',
-    flexDirection: 'row'
+    flexDirection: 'row',
+    shadowOpacity: 0.5,
+    shadowRadius: 3,
+    shadowColor: 'black',
+    shadowOffset: { height: 3, width: 3},
   },
   btnTxt: {
     backgroundColor: 'transparent',
