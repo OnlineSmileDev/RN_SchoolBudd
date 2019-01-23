@@ -87,7 +87,6 @@ export default class FindConsultant extends React.Component {
     }
   };
 
-
   constructor(props) {
     super(props);
     this.state = {
@@ -337,7 +336,7 @@ export default class FindConsultant extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.frost,
+    backgroundColor: 'white',
   },
   header: {
     height: 60,

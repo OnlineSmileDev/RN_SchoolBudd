@@ -54,7 +54,7 @@ export default class SaleBlock extends React.Component {
       that.setState({ name: childData.name, cityState: childData.cityState, profilePicture: childData.profilePicture,
         schoolName: childData.schoolName, skypeUsername: childData.skypeUsername});
       if(childData.profilePicture) {
-        Image.getSize(childData.profilePicture, (width, height) => {this.setState({getWidth: width, getHeight:height, ration: width/Metrics.screenWidth*.9})});
+        Image.getSize(childData.profilePicture, (width, height) => {this.setState({getWidth: width, getHeight:height, ration: width/Metrics.screenWidth})});
       }
     });
   }
@@ -87,26 +87,6 @@ export default class SaleBlock extends React.Component {
     console.log("pressed message: ");
     this.props.messageBlock(this.state.convoKey);
   }
-  imageButton(){
-    if(this.state.profilePicture){
-      return(
-        <Avatar
-          size="xlarge"
-          source={{uri : this.state.profilePicture}}
-          activeOpacity={0.7}
-          rounded
-        />
-      );
-    } else {
-      return(
-        <Avatar
-          size="xlarge"
-          source={Images.profile}
-          activeOpacity={0.7}
-          rounded
-        />);
-    }
-  }
 
   render() {
     return (
@@ -116,7 +96,7 @@ export default class SaleBlock extends React.Component {
         <View style={styles.cardView}>
           <Card style={styles.card}
               image={{uri: this.state.profilePicture}}
-              imageStyle={{flex: 1, width: this.state.getWidth/this.state.ration, height: this.state.getHeight/this.state.ration}}
+              imageStyle={{flex: 1, width: this.state.getWidth/this.state.ration*.92, height: this.state.getHeight/this.state.ration*.92}}
               imageProps={{ resizeMode: 'contain'}}
               >
               <View style={{flexDirection :'row'}}>

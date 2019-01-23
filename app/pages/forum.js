@@ -21,29 +21,29 @@ const {width, height} = Dimensions.get('window');
 export default class Forum extends React.Component {
  
   static navigationOptions = ({ navigation }) => {
-  const params = navigation.state.params || {};
-  const { navigate } = navigation;
-  return {
-    headerTitle: 'Forum',
-    title: 'Forum',
-    headerLeft: (
-      <Feather style={{ marginLeft: 15}}
-        name="menu"
-        size={Metrics.icons.medium}
-        color={Colors.lightPurple}
-        onPress={() => navigate('DrawerToggle')}
-      />
-    ),
-    headerRight: (
-      <Feather style={{ marginRight: 15}}
-        name="plus-circle"
-        size={Metrics.icons.medium}
-        color={Colors.lightPurple} 
-        onPress={params.createQuestion}
-      />
-    ),
+    const params = navigation.state.params || {};
+    const { navigate } = navigation;
+    return {
+      headerTitle: 'Forum',
+      title: 'Forum',
+      headerLeft: (
+        <Feather style={{ marginLeft: 15}}
+          name="menu"
+          size={Metrics.icons.medium}
+          color={Colors.lightPurple}
+          onPress={() => navigate('DrawerToggle')}
+        />
+      ),
+      headerRight: (
+        <Feather style={{ marginRight: 15}}
+          name="plus-circle"
+          size={Metrics.icons.medium}
+          color={Colors.lightPurple} 
+          onPress={params.createQuestion}
+        />
+      ),
     }
-};
+  };
 
 
   constructor(props) {
@@ -72,49 +72,40 @@ export default class Forum extends React.Component {
     console.log("forum props " + JSON.stringify(props));
   }
 
-async appendJedis(count, start) {
-
-  await this.setState({loading:true, refreshing : true});
-  await firebase.database().ref('forum').on('child_added', async(snapshot) => {
-    var childKey = snapshot.key;
-    var childData = snapshot.val();
-    childData.key = childKey;
-    questionText = childData.question.toLowerCase();
-    searchTextLowercase = this.state.searchText.toLowerCase();
-    var jedisList = this.state.jedisSectioned[0].data.slice();
-    console.log("current topic " + this.state.currentTopic);
-    console.log("userPortal " + this.state.userPortal);
-    // if (questionText.includes(searchTextLowercase) && (this.state.userPortal.toLowerCase() == childData.portalQuestion.toLowerCase())) {
-    if (questionText.includes(searchTextLowercase)) {
-    //   &&
-    // (this.state.userPortal.toLowerCase() == childData.portalQuestion.toLowerCase() || (this.state.userPortal == 'consultant'))) {
-      if ((this.state.currentTopic == "Select a Question Topic" || this.state.currentTopic == "All Topics") 
-      && !jedisList.indexOf(childData) > -1) {
-        jedisList.push(childData);
-      } else if (childData.topic == this.state.currentTopic && !jedisList.indexOf(childData) > -1) {
-        jedisList.push(childData);
+  async appendJedis(count, start) {
+    await this.setState({loading:true, refreshing : true});
+    await firebase.database().ref('forum').on('child_added', async(snapshot) => {
+      var childKey = snapshot.key;
+      var childData = snapshot.val();
+      childData.key = childKey;
+      questionText = childData.question.toLowerCase();
+      searchTextLowercase = this.state.searchText.toLowerCase();
+      var jedisList = this.state.jedisSectioned[0].data.slice();
+      console.log("current topic " + this.state.currentTopic);
+      console.log("userPortal " + this.state.userPortal);
+      // if (questionText.includes(searchTextLowercase) && (this.state.userPortal.toLowerCase() == childData.portalQuestion.toLowerCase())) {
+      if (questionText.includes(searchTextLowercase)) {
+      //   &&
+      // (this.state.userPortal.toLowerCase() == childData.portalQuestion.toLowerCase() || (this.state.userPortal == 'consultant'))) {
+        if ((this.state.currentTopic == "Select a Question Topic" || this.state.currentTopic == "All Topics") 
+        && !jedisList.indexOf(childData) > -1) {
+          jedisList.push(childData);
+        } else if (childData.topic == this.state.currentTopic && !jedisList.indexOf(childData) > -1) {
+          jedisList.push(childData);
+        }
+      } else {
+        alert("No Question");
       }
-    } else {
-      alert("No Question");
-    }
-    await this.setState({loading: false, refreshing: false, jedisSectioned: [{title: 'Jedis', data:jedisList}]});
-    console.log("loading : " + this.state.loading);
+      await this.setState({loading: false, refreshing: false, jedisSectioned: [{title: 'Jedis', data:jedisList}]});
+      console.log("loading : " + this.state.loading);
 
-    // console.log(childData);
-  });
+      // console.log(childData);
+    });
 
-  console.log("jedis " + JSON.stringify(this.state.jedisSectioned));
-  this.state.jedisSectioned.forEach(function(element) {
-    console.log("jedi " + element.value)
-  });
-  // var jedisList = this.state.jedisSectioned[0].data.slice();
-  // this.setState({loading: true});
-  // for(i=start; i < count+start; i++) {
-  //   await this.getJedi(i, jedisList);
-  // }
-  // this.setState({loading: false, refreshing: false, jedisSectioned: [{title: 'Jedis', data:jedisList}]});
-  //do i need a for loop right here to check to see if there are duplicate values
-}
+    this.state.jedisSectioned.forEach(function(element) {
+      console.log("jedi " + element.value)
+    });
+  }
 
   componentWillMount = async() => {
     this.checkIfUserLoggedIn();
@@ -280,37 +271,38 @@ async appendJedis(count, start) {
 
     if (!this.state.hasLoggedIn) {
         return (<LoggedOut/>);
-    } else if (this.state.isQuestionModalVisible == true) {
-
-    return (
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+    } 
+    else {
+      return(
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
           <View style={styles.container}>
 
-                <View style={styles.purchaseBox}>
+            <View style={styles.purchaseBox}>
+              <SearchBar
+                lightTheme
+                round
+                onChangeText={(searchText) => this.setState({searchText})}
+                onClearText={console.log('')}
+                onSubmitEditing={() => this.resetList()}
+                icon={{ type: 'font-awesome', name: 'search' }}
+                containerStyle={{width: Metrics.screenWidth*.95, marginBottom: 10}}
+                placeholder='Search For Item...'
+                />
 
-                <SearchBar
-                  lightTheme
-                  round
-                  onChangeText={(searchText) => this.setState({searchText})}
-                  onClearText={console.log('')}
-                  onSubmitEditing={() => this.resetList()}
-                  icon={{ type: 'font-awesome', name: 'search' }}
-                  containerStyle={{width: Metrics.screenWidth*.95, marginBottom: 10}}
-                  placeholder='Search For Item...'
-                  />
-
-                    <CheckBox
-                      center
-                      title={this.state.currentTopic}
-                      iconRight
-                      iconType='material'
-                      checkedIcon='clear'
-                      uncheckedIcon='add'
-                      checkedColor='red'
-                      containerStyle={{width: Metrics.screenWidth*.95}}
-                      checked={this.state.checked}
-                      onPress={()=> this.onPressTopic()}
-                    />
+                <CheckBox
+                  center
+                  title={this.state.currentTopic}
+                  iconRight
+                  iconType='material'
+                  checkedIcon='clear'
+                  uncheckedIcon='add'
+                  checkedColor='red'
+                  containerStyle={{width: Metrics.screenWidth*.95}}
+                  checked={this.state.checked}
+                  onPress={()=> this.onPressTopic()}
+                />
+                {
+                  this.state.isQuestionModalVisible == true ? (
                     <KeyboardAvoidingView style={{flex : 1}}>
                       <View style={{ alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
                           <Modal
@@ -339,9 +331,7 @@ async appendJedis(count, start) {
                                   onPress={() => this.onPressPostQuestion()}
                                 />
                               </View>
-                              <View 
-                              // style={styles.modalViewQuestion}
-                                style={{
+                              <View style={{
                                   flex: 1,
                                   justifyContent: "flex-start",
                                   alignItems: "flex-start",
@@ -378,145 +368,62 @@ async appendJedis(count, start) {
                     </Modal>
                   </View>
                   </KeyboardAvoidingView>
-
-                  <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                      <Modal
-                        isVisible={this.state.isTopicModalVisible}
-                        onBackdropPress={() => this.setState({ isTopicModalVisible: false })}
-                        backdropColor={'black'}>
-                        <View style={styles.modalViewTopic}>
-                          <Text style={styles.modalText}>
-                          Pick a Category!
-                          </Text>
-                            <Button
-                              titleStyle={{color : 'white', fontWeight: '700', fontSize: 20}}
-                              buttonStyle={{width : 200, borderRadius: 5, margin: 5, borderWidth : 1, borderColor : '#FFF', backgroundColor :'#03A9F4'}}
-                              title='College Life'
-                              onPress={() => this.onPressCollegeLife()}/>
-                            <Button
-                              titleStyle={{color : 'white', fontWeight: '700', fontSize: 20}}
-                              buttonStyle={{width : 200, borderRadius: 5, margin: 5, borderWidth : 1, borderColor : '#FFF', backgroundColor :'#03A9F4'}}
-                              title='College Applications'
-                              onPress={() => this.onPressCollegeApplications()}/>
-                            <Button
-                              titleStyle={{color : 'white', fontWeight: '700', fontSize: 20}}
-                              buttonStyle={{width : 200, borderRadius: 5, margin: 5, borderWidth : 1, borderColor : '#FFF', backgroundColor :'#03A9F4'}}
-                              title='Resources'
-                              onPress={() => this.onPressResources()}/>
-                            <Button
-                              titleStyle={{color : 'white', fontWeight: '700', fontSize: 20}}
-                              buttonStyle={{width : 200, borderRadius: 5, margin: 5, borderWidth : 1, borderColor : '#FFF', backgroundColor :'#03A9F4'}}
-                              title='All Topics'
-                              onPress={() => this.onPressAllTopics()}/>
-                        </View>
-                    </Modal>
-                  </View>
-
+                  ) : null
+                }
+              
+                <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                  <Modal
+                    isVisible={this.state.isTopicModalVisible}
+                    onBackdropPress={() => this.setState({ isTopicModalVisible: false })}
+                    backdropColor={'black'}>
+                    <View style={styles.modalViewTopic}>
+                      <Text style={styles.modalText}>
+                        Pick a Category!
+                      </Text>
+                        <Button
+                          titleStyle={{color : 'white', fontWeight: '700', fontSize: 20}}
+                          buttonStyle={{width : 200, borderRadius: 5, margin: 5, borderWidth : 1, borderColor : '#FFF', backgroundColor :'#03A9F4'}}
+                          title='College Life'
+                          onPress={() => this.onPressCollegeLife()}/>
+                        <Button
+                          titleStyle={{color : 'white', fontWeight: '700', fontSize: 20}}
+                          buttonStyle={{width : 200, borderRadius: 5, margin: 5, borderWidth : 1, borderColor : '#FFF', backgroundColor :'#03A9F4'}}
+                          title='College Applications'
+                          onPress={() => this.onPressCollegeApplications()}/>
+                        <Button
+                          titleStyle={{color : 'white', fontWeight: '700', fontSize: 20}}
+                          buttonStyle={{width : 200, borderRadius: 5, margin: 5, borderWidth : 1, borderColor : '#FFF', backgroundColor :'#03A9F4'}}
+                          title='Resources'
+                          onPress={() => this.onPressResources()}/>
+                        <Button
+                          titleStyle={{color : 'white', fontWeight: '700', fontSize: 20}}
+                          buttonStyle={{width : 200, borderRadius: 5, margin: 5, borderWidth : 1, borderColor : '#FFF', backgroundColor :'#03A9F4'}}
+                          title='All Topics'
+                          onPress={() => this.onPressAllTopics()}/>
+                    </View>
+                  </Modal>
                 </View>
 
-                <View style={styles.itemList}>
-                  <SectionList
-                    sections={this.state.jedisSectioned}
-                    // onEndReached={() => this.loadMore(3,this.state.jedisSectioned[0].data.length+1)}
-                    renderItem={({item}) => this.listItemRenderer(item)}
-                    ItemSeparatorComponent = {() => (<View style={{height: 10}}/>)}
-                    keyExtractor={this._keyExtractor}
-                    contentContainerStyle = {{alignItems: 'center'}}
-                    onRefresh = {() => this.resetList()}
-                    refreshing = {this.state.refreshing}
-                    removeClippedSubviews = {true}
-                    // ListFooterComponent = {<ActivityIndicator />}
-                  />
-                </View>
+              </View>
+
+            <View style={styles.itemList}>
+              <SectionList
+                sections={this.state.jedisSectioned}
+                // onEndReached={() => this.loadMore(3,this.state.jedisSectioned[0].data.length+1)}
+                renderItem={({item}) => this.listItemRenderer(item)}
+                ItemSeparatorComponent = {() => (<View style={{height: 10, backgroundColor: '#e7e7e7'}}/>)}
+                keyExtractor={this._keyExtractor}
+                contentContainerStyle = {{alignItems: 'center'}}
+                onRefresh = {() => this.resetList()}
+                refreshing = {this.state.refreshing}
+                removeClippedSubviews = {true}
+                // ListFooterComponent = {<ActivityIndicator />}
+              />
+            </View>
           </View>
       </TouchableWithoutFeedback>
-    );
-
-  } else {
-    const {loading} = this.state;
-    return (
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-          <View style={styles.container}>
-
-                <View style={styles.purchaseBox}>
-
-                <SearchBar
-                  lightTheme
-                  round
-                  onChangeText={(searchText) => this.setState({searchText})}
-                  onClearText={console.log('')}
-                  onSubmitEditing={() => this.resetList()}
-                  icon={{ type: 'font-awesome', name: 'search' }}
-                  containerStyle={{width: Metrics.screenWidth*.95, marginBottom: 10}}
-                  placeholder='Search For Item...'
-                  />
-
-                    <CheckBox
-                      center
-                      title={this.state.currentTopic}
-                      iconRight
-                      iconType='material'
-                      checkedIcon='clear'
-                      uncheckedIcon='add'
-                      checkedColor='red'
-                      containerStyle={{width: Metrics.screenWidth*.95}}
-                      checked={this.state.checked}
-                      onPress={()=> this.onPressTopic(0)}
-                    />
-
-                  <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                      <Modal
-                        isVisible={this.state.isTopicModalVisible}
-                        onBackdropPress={() => this.setState({ isTopicModalVisible: false })}
-                        backdropColor={'black'}>
-                        <View style={styles.modalViewTopic}>
-                          <Text style={styles.modalText}>
-                          Pick a Category!
-                          </Text>
-                            <Button
-                              titleStyle={{color : 'white', fontWeight: '700', fontSize: 20}}
-                              buttonStyle={{width : 200, borderRadius: 5, margin: 5, borderWidth : 1, borderColor : '#FFF', backgroundColor :'#03A9F4'}}
-                              title='College Life'
-                              onPress={() => this.onPressCollegeLife()}/>
-                            <Button
-                              titleStyle={{color : 'white', fontWeight: '700', fontSize: 20}}
-                              buttonStyle={{width : 200, borderRadius: 5, margin: 5, borderWidth : 1, borderColor : '#FFF', backgroundColor :'#03A9F4'}}
-                              title='College Applications'
-                              onPress={() => this.onPressCollegeApplications()}/>
-                            <Button
-                              titleStyle={{color : 'white', fontWeight: '700', fontSize: 20}}
-                              buttonStyle={{width : 200, borderRadius: 5, margin: 5, borderWidth : 1, borderColor : '#FFF', backgroundColor :'#03A9F4'}}
-                              title='Resources'
-                              onPress={() => this.onPressResources()}/>
-                            <Button
-                              titleStyle={{color : 'white', fontWeight: '700', fontSize: 20}}
-                              buttonStyle={{width : 200, borderRadius: 5, margin: 5, borderWidth : 1, borderColor : '#FFF', backgroundColor :'#03A9F4'}}
-                              title='All Topics'
-                              onPress={() => this.onPressAllTopics()}/>
-                        </View>
-                    </Modal>
-                  </View>
-
-                </View>
-
-                <View style={styles.itemList}>
-                  <SectionList
-                    sections={this.state.jedisSectioned}
-                    // onEndReached={() => this.loadMore(3,this.state.jedisSectioned[0].data.length+1)}
-                    renderItem={({item}) => this.listItemRenderer(item)}
-                    ItemSeparatorComponent = {() => (<View style={{height: 10}}/>)}
-                    keyExtractor={this._keyExtractor}
-                    contentContainerStyle = {{alignItems: 'center'}}
-                    onRefresh = {() => this.resetList()}
-                    refreshing = {this.state.refreshing}
-                    removeClippedSubviews = {true}
-                    // ListFooterComponent = {<ActivityIndicator size="large" animating={loading}/>}
-                  />
-                </View>
-          </View>
-      </TouchableWithoutFeedback>
-    );
-  }
+      )
+    }
   }
 }
 
@@ -524,16 +431,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.snow,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  header: {
-    height: 60,
-    width: width,
-    backgroundColor: "#ff8080",
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 10
   },
   title: {
     color: 'white',
@@ -542,7 +439,6 @@ const styles = StyleSheet.create({
   purchaseBox: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 20,
     height: 150,
     width: Metrics.width*.9,
   },
@@ -555,7 +451,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   itemList: {
-    height: Metrics.screenHeight*.6,
+    flex: 1,
     width: Metrics.screenWidth,
     paddingTop: 10,
   },
