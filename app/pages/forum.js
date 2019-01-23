@@ -93,13 +93,11 @@ export default class Forum extends React.Component {
         } else if (childData.topic == this.state.currentTopic && !jedisList.indexOf(childData) > -1) {
           jedisList.push(childData);
         }
-      } else {
-        alert("No Question");
-      }
+      } 
+
       await this.setState({loading: false, refreshing: false, jedisSectioned: [{title: 'Jedis', data:jedisList}]});
       console.log("loading : " + this.state.loading);
 
-      // console.log(childData);
     });
 
     this.state.jedisSectioned.forEach(function(element) {
@@ -132,8 +130,8 @@ export default class Forum extends React.Component {
       }
     });
 
-    await console.log("current user " + this.state.userName);
-    await console.log("current user portal " + this.state.userPortal);
+    await console.log("current user " + that.state.userName);
+    await console.log("current user portal " + that.state.userPortal);
     this.appendJedis(3,1);
 
   }
@@ -207,6 +205,7 @@ export default class Forum extends React.Component {
 
 
   resetList = async () => {
+    await this.setState({refreshing: true, jedisSectioned: [{title: 'Jedis', data:[]}]});
     this.appendJedis(3,1);
   }
 
@@ -304,7 +303,7 @@ export default class Forum extends React.Component {
                 {
                   this.state.isQuestionModalVisible == true ? (
                     <KeyboardAvoidingView style={{flex : 1}}>
-                      <View style={{ alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+                      <View style={{ alignItems: 'center', justifyContent: 'center' }}>
                           <Modal
                             isVisible={this.state.isQuestionModalVisible}
                             onBackdropPress={() => this.setState({ isQuestionModalVisible: false })}
@@ -338,20 +337,10 @@ export default class Forum extends React.Component {
                                   width: "100%"
                                 }}
                               >
-                              <Input style={{
-                                  flex: 1,
-                                  width: "100%",
-                                  fontSize: 20,
-                                  alignContent: "flex-start",
-                                  justifyContent: "flex-start",
-                                  textAlignVertical: "top",
-                                  margin: 12
-                                  }}
+                              <Input style={ styles.inputText }
                                 placeholder="Ex: When are the common app essays released?"
                                 underlineColorAndroid="transparent"
                                 multiline={true}
-                                selectTextOnFocus={true}
-                                spellCheck={true}
                                 onChangeText={(text) => this.setState({question: text})}
                                 onSubmitEditing={(text) => this.setState({question: text})}
                                 />
@@ -380,26 +369,26 @@ export default class Forum extends React.Component {
                       <Text style={styles.modalText}>
                         Pick a Category!
                       </Text>
-                        <Button
-                          titleStyle={{color : 'white', fontWeight: '700', fontSize: 20}}
-                          buttonStyle={{width : 200, borderRadius: 5, margin: 5, borderWidth : 1, borderColor : '#FFF', backgroundColor :'#03A9F4'}}
-                          title='College Life'
-                          onPress={() => this.onPressCollegeLife()}/>
-                        <Button
-                          titleStyle={{color : 'white', fontWeight: '700', fontSize: 20}}
-                          buttonStyle={{width : 200, borderRadius: 5, margin: 5, borderWidth : 1, borderColor : '#FFF', backgroundColor :'#03A9F4'}}
-                          title='College Applications'
-                          onPress={() => this.onPressCollegeApplications()}/>
-                        <Button
-                          titleStyle={{color : 'white', fontWeight: '700', fontSize: 20}}
-                          buttonStyle={{width : 200, borderRadius: 5, margin: 5, borderWidth : 1, borderColor : '#FFF', backgroundColor :'#03A9F4'}}
-                          title='Resources'
-                          onPress={() => this.onPressResources()}/>
-                        <Button
-                          titleStyle={{color : 'white', fontWeight: '700', fontSize: 20}}
-                          buttonStyle={{width : 200, borderRadius: 5, margin: 5, borderWidth : 1, borderColor : '#FFF', backgroundColor :'#03A9F4'}}
-                          title='All Topics'
-                          onPress={() => this.onPressAllTopics()}/>
+                      <Button
+                        titleStyle={{color : 'white', fontWeight: '700', fontSize: 20}}
+                        buttonStyle={{width : 200, borderRadius: 5, margin: 5, borderWidth : 1, borderColor : '#FFF', backgroundColor :'#03A9F4'}}
+                        title='College Life'
+                        onPress={() => this.onPressCollegeLife()}/>
+                      <Button
+                        titleStyle={{color : 'white', fontWeight: '700', fontSize: 20}}
+                        buttonStyle={{width : 200, borderRadius: 5, margin: 5, borderWidth : 1, borderColor : '#FFF', backgroundColor :'#03A9F4'}}
+                        title='College Applications'
+                        onPress={() => this.onPressCollegeApplications()}/>
+                      <Button
+                        titleStyle={{color : 'white', fontWeight: '700', fontSize: 20}}
+                        buttonStyle={{width : 200, borderRadius: 5, margin: 5, borderWidth : 1, borderColor : '#FFF', backgroundColor :'#03A9F4'}}
+                        title='Resources'
+                        onPress={() => this.onPressResources()}/>
+                      <Button
+                        titleStyle={{color : 'white', fontWeight: '700', fontSize: 20}}
+                        buttonStyle={{width : 200, borderRadius: 5, margin: 5, borderWidth : 1, borderColor : '#FFF', backgroundColor :'#03A9F4'}}
+                        title='All Topics'
+                        onPress={() => this.onPressAllTopics()}/>
                     </View>
                   </Modal>
                 </View>
@@ -414,7 +403,7 @@ export default class Forum extends React.Component {
                 ItemSeparatorComponent = {() => (<View style={{height: 10, backgroundColor: '#e7e7e7'}}/>)}
                 keyExtractor={this._keyExtractor}
                 contentContainerStyle = {{alignItems: 'center'}}
-                onRefresh = {() => this.resetList()}
+                // onRefresh = {() => this.resetList()}
                 refreshing = {this.state.refreshing}
                 removeClippedSubviews = {true}
                 // ListFooterComponent = {<ActivityIndicator />}
@@ -442,21 +431,13 @@ const styles = StyleSheet.create({
     height: 150,
     width: Metrics.width*.9,
   },
-  textStyles: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 10,
-    marginBottom: 10,
-    fontWeight: 'bold',
-    fontSize: 12,
-  },
   itemList: {
     flex: 1,
     width: Metrics.screenWidth,
     paddingTop: 10,
   },
   modalViewTopic: {
-    height: Metrics.screenHeight*.6,
+    height: Metrics.screenHeight*.5,
     borderStyle: 'solid',
     borderWidth: .5,
     alignItems: 'center',
@@ -475,8 +456,9 @@ const styles = StyleSheet.create({
     borderRadius: 15,
   },
   modalText: {
-    fontSize: 25,
+    fontSize: 24,
     fontWeight: 'bold',
+    marginBottom: 20,
   },
   modal: {
     justifyContent: "flex-start",
@@ -508,4 +490,20 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 5
   },
+  inputText: {
+    width: '100%',
+    flex: 1,
+    alignContent: "flex-start",
+    justifyContent: "flex-start",
+    minHeight: 40,
+    textAlignVertical: "top",
+    padding: 10,
+    fontSize: 14,
+    textDecorationLine: 'none',
+    lineHeight: 20,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: Colors.lightPurple,
+    backgroundColor: 'white',
+  }
 });

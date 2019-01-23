@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, ActivityIndicator, TouchableOpacity, Image, AsyncStorage, SectionList, TextInput, Button } from 'react-native';
+import { StyleSheet, Text, View, ActivityIndicator, TouchableOpacity, Image, AsyncStorage, SectionList, TextInput } from 'react-native';
 import Metrics from '../Themes/Metrics';
 import Colors from '../Themes/Colors';
 import Images from '../Themes/Images';
@@ -9,6 +9,7 @@ import { NavigationActions } from 'react-navigation';
 import AnswerBlock from '../components/answerBlock';
 import Modal from "react-native-modal";
 import { globalStyles } from '../Themes/Styles';
+import { Button } from 'react-native-elements'
 
 export default class QuestionResponses extends React.Component {
   static navigationOptions = {
@@ -119,6 +120,7 @@ export default class QuestionResponses extends React.Component {
   onPressPostAnswer = async() => {
     console.log("pressed answer");
     console.log("author " + JSON.stringify(firebase.auth().currentUser));
+    await this.setState({ isAnswerModalVisible: false});
     await firebase.database().ref('forum').child(this.state.key).child('answers').push({
         answer: this.state.answer,
         author: this.state.userName,
@@ -127,7 +129,7 @@ export default class QuestionResponses extends React.Component {
         upvotes : 0,
         profileImage : '',
       });
-    this.setState({ isAnswerModalVisible: false});
+    
   }
 
   _keyExtractor = (item, index) => index;
@@ -163,31 +165,26 @@ export default class QuestionResponses extends React.Component {
             isVisible={this.state.isAnswerModalVisible}
             onBackdropPress={() => this.setState({ isAnswerModalVisible: false })}
             backdropColor={'black'}>
-              <View style={styles.modalView}>
-                <Text style={styles.modalText}>
-                  Ask a Question!
-                </Text>
-                <Text style={styles.modalText}>
-
-                </Text>
-                <TextInput style={styles.inputText}
-                    placeholder="No, you shouldn't wait till the last minute to write your common app essay"
-                    underlineColorAndroid="transparent"
-                    multiline={true}
-                    onChangeText={(text) => this.setState({answer: text})}
-                    onSubmitEditing={(text) => this.setState({answer: text})}
-                    />
-                <Button
-                  color={Colors.lightPurple}
-                  buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 5, marginTop: 5}}
-                  title='Post'
-                  onPress={() => this.onPressPostAnswer()}/>
-                <Button
-                  color={Colors.lightPurple}
-                  buttonStyle={{borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 5, marginTop: 5}}
-                  title='Cancel'
-                  onPress={() => this.setState({ isAnswerModalVisible: false})}/>
-              </View>
+            <View style={styles.modalView}>
+              <Text style={styles.modalText}>
+                Ask a Question!
+              </Text>
+              <TextInput style={ styles.inputText }
+                  placeholder="Ex: When are the common app essays released?"
+                  underlineColorAndroid="transparent"
+                  multiline={true}
+                  onChangeText={(text) => this.setState({answer: text})}
+                  onSubmitEditing={(text) => this.setState({answer: text})}
+              />
+              <Button
+                buttonStyle={styles.addBtn}
+                title='Post'
+                onPress={() => this.onPressPostAnswer()}/>
+              <Button
+                buttonStyle={styles.addBtn}
+                title='Cancel'
+                onPress={() => this.setState({ isAnswerModalVisible: false})}/>
+            </View>
           </Modal>
         </View>
 
@@ -217,64 +214,58 @@ const styles = StyleSheet.create({
   },
   profileView: {
     width: Metrics.screenWidth,
-    // flex: 1,
     backgroundColor:'white',
     padding: 15,
     paddingBottom: 0,
     borderBottomWidth: 1,
     borderColor: 'gray',
   },
-  pictureView: {
-    marginLeft: Metrics.marginHorizontal,
-    marginRight: Metrics.marginHorizontal,
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    alignItems: 'center'
-  },
-  picture: {
-    height: Metrics.images.large,
-    width: Metrics.images.large,
-    borderRadius: Metrics.images.large * 0.5
-  },
   itemList: {
     height: Metrics.screenHeight*.65,
     width: Metrics.screenWidth,
     paddingTop: 10
   },
-  pictureDetails: {
-    flexDirection: 'column',
-    marginLeft: Metrics.marginHorizontal,
-    marginRight: Metrics.marginHorizontal,
-  },
-  jediRowItem: {
-    marginTop: Metrics.marginVertical,
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    alignItems: 'center'
-  },
-  textStyles: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 10,
-    marginBottom: 10,
-    fontWeight: 'bold',
-    fontSize: 12,
-  },
   modalView: {
-    height: Metrics.screenHeight*.6,
+    height: Metrics.screenHeight/2,
+    padding: 15,
     borderStyle: 'solid',
     borderWidth: .5,
     alignItems: 'center',
-    justifyContent: 'space-around',
+    justifyContent: 'flex-start',
     backgroundColor: 'white',
     borderRadius: 15,
+    marginBottom: 40
   },
   modalText: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
+    marginVertical: 10,
   },
   btnText: {
     color: 'white',
     fontSize: 18
+  },
+  inputText: {
+    width: '100%',
+    flex: 1,
+    alignContent: "flex-start",
+    justifyContent: "flex-start",
+    textAlignVertical: "top",
+    padding: 10,
+    fontSize: 14,
+    textDecorationLine: 'none',
+    lineHeight: 20,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: Colors.lightPurple,
+    backgroundColor: 'white',
+    marginVertical: 10
+  },
+  addBtn: {
+    backgroundColor : Colors.lightPurple, 
+    width : Metrics.screenWidth * .8, 
+    borderColor : 'transparent', 
+    borderWidth : 0, 
+    borderRadius : 20, margin : 10
   },
 });
